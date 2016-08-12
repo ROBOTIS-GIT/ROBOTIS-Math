@@ -33,6 +33,7 @@ add_library(robotis_math
    src/robotis_math_base.cpp
    src/robotis_trajectory_calculator.cpp
    src/robotis_linear_algebra.cpp
+   src/bezier_curve.cpp
 )
 
 add_dependencies(robotis_math ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
