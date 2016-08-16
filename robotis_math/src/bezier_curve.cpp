@@ -45,7 +45,7 @@ BezierCurve::BezierCurve()
 BezierCurve::~BezierCurve()
 {  }
 
-void BezierCurve::setBezierControlPoints(std::vector<Point2D> points)
+void BezierCurve::setBezierControlPoints(const std::vector<Point2D>& points)
 {
   control_points_.clear();
   control_points_ = points;
@@ -60,13 +60,11 @@ Point2D BezierCurve::getPoint(double t)
 
   int points_num = control_points_.size();
   Point2D point_at_t;
+  point_at_t.x = 0;
+  point_at_t.y = 0;
 
   if(points_num < 2)
-  {
-    point_at_t.x = 0;
-    point_at_t.y = 0;
     return point_at_t;
-  }
 
   point_at_t.x = control_points_[0].x * powDI(1-t, points_num - 1);
   point_at_t.y = control_points_[0].y * powDI(1-t, points_num - 1);

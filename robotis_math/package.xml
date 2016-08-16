@@ -2,12 +2,16 @@
 <package>
   <name>robotis_math</name>
   <version>0.0.0</version>
-  <description>The robotis_math package</description>
+  <description>
+    The robotis_math package
+    This package is a set of basic math fuctions for ROBOTIS's robots.
+    We provide some linear algebra and trajectory generation funntions and classes.
+  </description>
 
-   <maintainer email="sch@robotis.com">sch</maintainer>
-   <license>BSD</license>
+  <maintainer email="sch@robotis.com">sch</maintainer>
+  <license>BSD</license>
    
-   <author email="sch@robotis.com">sch</author>
+  <author email="sch@robotis.com">sch</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
