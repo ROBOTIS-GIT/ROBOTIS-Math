@@ -29,42 +29,39 @@
  *******************************************************************************/
 
 /*
- * robotis_math_base.h
+ * bezier_curve.h
  *
- *  Created on: June 7, 2016
- *      Author: sch
+ *  Created on: 2016. 8. 12.
+ *      Author: JaySong
  */
 
-#ifndef ROBOTIS_MATH_ROBOTIS_MATH_BASE_H_
-#define ROBOTIS_MATH_ROBOTIS_MATH_BASE_H_
+#ifndef ROBOTIS_MATH_BEZIER_CURVE_H_
+#define ROBOTIS_MATH_BEZIER_CURVE_H_
 
-#include <cmath>
+#include <vector>
+
+#include "robotis_math_base.h"
+#include "robotis_linear_algebra.h"
 
 namespace robotis_framework
 {
 
-#define PRINT_VAR(X) std::cout << #X << " : " << X << std::endl
-#define PRINT_MAT(X) std::cout << #X << ":\n" << X << std::endl << std::endl
-
-#define DEGREE2RADIAN (M_PI / 180.0)
-#define RADIAN2DEGREE (180.0 / M_PI)
-
-inline double powDI(double a, int b)
+class BezierCurve
 {
-	return (b == 0 ? 1 : (b > 0 ? a * powDI(a, b - 1) : 1 / powDI(a, -b)));
-}
+public:
+  BezierCurve();
+  ~BezierCurve();
 
-double sign(double x);
+  void setBezierControlPoints(const std::vector<Point2D>& points);
 
-int combination(int n, int r);
+  Point2D getPoint(double t);
 
-typedef struct
-{
-  double x, y;
-} Point2D;
+private:
+  std::vector<Point2D> control_points_;
+
+};
 
 }
 
 
-
-#endif /* ROBOTIS_MATH_ROBOTIS_MATH_BASE_H_ */
+#endif /* ROBOTIS_MATH_BEZIER_CURVE_H_ */

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>robotis_math</name>
+<<<<<<< HEAD
   <version>0.1.0</version>
   <description>The robotis_math package</description>
   <license>BSD</license>
@@ -9,6 +10,20 @@
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/ROBOTIS-Math/issues</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/ROBOTIS-Math</url>
   <url type="website">http://wiki.ros.org/robotis_math</url>
+=======
+  <version>0.0.0</version>
+  <description>
+    The robotis_math package
+    This package is a set of basic math fuctions for ROBOTIS's robots.
+    We provide some linear algebra and trajectory generation funntions and classes.
+  </description>
+
+  <maintainer email="sch@robotis.com">sch</maintainer>
+  <license>BSD</license>
+   
+  <author email="sch@robotis.com">sch</author>
+
+>>>>>>> 015952f3e932779f261922b23f53164068e0c17a
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>cmake_modules</build_depend>
