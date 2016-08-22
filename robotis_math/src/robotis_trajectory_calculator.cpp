@@ -449,16 +449,16 @@ FifthOrderPolynomialTrajectory::FifthOrderPolynomialTrajectory(double initial_ti
     position_coeff_ = time_mat.inverse() * conditions_mat;
     velocity_coeff_ <<                            0.0,
                        5.0*position_coeff_.coeff(0,0),
-                       4.0*position_coeff_.coeff(0,1),
-                       3.0*position_coeff_.coeff(0,2),
-                       2.0*position_coeff_.coeff(0,3),
-                       1.0*position_coeff_.coeff(0,4);
+                       4.0*position_coeff_.coeff(1,0),
+                       3.0*position_coeff_.coeff(2,0),
+                       2.0*position_coeff_.coeff(3,0),
+                       1.0*position_coeff_.coeff(4,0);
     acceleration_coeff_ <<                            0.0,
                                                       0.0,
                           20.0*position_coeff_.coeff(0,0),
-                          12.0*position_coeff_.coeff(0,1),
-                           6.0*position_coeff_.coeff(0,2),
-                           2.0*position_coeff_.coeff(0,3);
+                          12.0*position_coeff_.coeff(1,0),
+                           6.0*position_coeff_.coeff(2,0),
+                           2.0*position_coeff_.coeff(3,0);
   }
 
 }
