@@ -52,7 +52,7 @@ public:
   BezierCurve();
   ~BezierCurve();
 
-  void setBezierControlPoints(std::vector<Point2D> points);
+  void setBezierControlPoints(const std::vector<Point2D>& points);
 
   Point2D getPoint(double t);
 
