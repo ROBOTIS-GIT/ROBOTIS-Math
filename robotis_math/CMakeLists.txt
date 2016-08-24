@@ -43,6 +43,8 @@ include_directories(
 add_library(robotis_math
    src/robotis_math_base.cpp
    src/robotis_trajectory_calculator.cpp
+   src/fifth_order_polynomial_trajectory.cpp
+   src/simple_trapezoidal_velocity_profile.cpp
    src/robotis_linear_algebra.cpp
    src/bezier_curve.cpp
 )
