@@ -29,42 +29,62 @@
  *******************************************************************************/
 
 /*
- * robotis_math_base.h
+ * fifth_order_polynomial_trajectory.h
  *
- *  Created on: June 7, 2016
- *      Author: sch
+ *  Created on: 2016. 8. 24.
+ *      Author: Jay Song
  */
 
-#ifndef ROBOTIS_MATH_ROBOTIS_MATH_BASE_H_
-#define ROBOTIS_MATH_ROBOTIS_MATH_BASE_H_
+#ifndef ROBOTIS_MATH_FIFTH_ORDER_POLYNOMIAL_TRAJECTORY_H_
+#define ROBOTIS_MATH_FIFTH_ORDER_POLYNOMIAL_TRAJECTORY_H_
 
-#include <cmath>
+#include "robotis_linear_algebra.h"
+#include "robotis_math_base.h"
 
 namespace robotis_framework
 {
-
-#define PRINT_VAR(X) std::cout << #X << " : " << X << std::endl
-#define PRINT_MAT(X) std::cout << #X << ":\n" << X << std::endl << std::endl
-
-#define DEGREE2RADIAN (M_PI / 180.0)
-#define RADIAN2DEGREE (180.0 / M_PI)
-
-inline double powDI(double a, int b)
+class FifthOrderPolynomialTrajectory
 {
-	return (b == 0 ? 1 : (b > 0 ? a * powDI(a, b - 1) : 1 / powDI(a, -b)));
+public:
+  FifthOrderPolynomialTrajectory(double initial_time, double initial_pos, double initial_vel, double initial_acc,
+                                 double final_time,   double final_pos,   double final_vel,   double final_acc);
+  FifthOrderPolynomialTrajectory();
+  ~FifthOrderPolynomialTrajectory();
+
+  bool changeTrajectory(double final_pos,   double final_vel,   double final_acc);
+  bool changeTrajectory(double final_time,   double final_pos,   double final_vel,   double final_acc);
+  bool changeTrajectory(double initial_time, double initial_pos, double initial_vel, double initial_acc,
+                        double final_time,   double final_pos,   double final_vel,   double final_acc);
+
+  double getPosition(double time);
+  double getVelocity(double time);
+  double getAcceleration(double time);
+
+  void setTime(double time);
+  double getPosition();
+  double getVelocity();
+  double getAcceleration();
+
+  double initial_time_;
+  double initial_pos_;
+  double initial_vel_;
+  double initial_acc_;
+
+  double current_time_;
+  double current_pos_;
+  double current_vel_;
+  double current_acc_;
+
+  double final_time_;
+  double final_pos_;
+  double final_vel_;
+  double final_acc_;
+
+  Eigen::MatrixXd position_coeff_;
+  Eigen::MatrixXd velocity_coeff_;
+  Eigen::MatrixXd acceleration_coeff_;
+  Eigen::MatrixXd time_variables_;
+};
 }
 
-double sign(double x);
-
-int combination(int n, int r);
-
-typedef struct
-{
-  double x, y;
-} Point2D;
-
-}
-
-
-
-#endif /* ROBOTIS_MATH_ROBOTIS_MATH_BASE_H_ */
+#endif /* ROBOTIS_MATH_FIFTH_ORDER_POLYNOMIAL_TRAJECTORY_H_ */

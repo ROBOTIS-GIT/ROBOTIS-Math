@@ -40,12 +40,12 @@
 
 #include "robotis_linear_algebra.h"
 #include "robotis_math_base.h"
-
-// minimum jerk trajectory
+#include "fifth_order_polynomial_trajectory.h"
+#include "simple_trapezoidal_velocity_profile.h"
 
 namespace robotis_framework
 {
-
+// minimum jerk trajectory
 Eigen::MatrixXd calcMinimumJerkTra(double pos_start, double vel_start, double accel_start,
                                    double pos_end,   double vel_end,   double accel_end,
                                    double smp_time,  double mov_time);
@@ -63,50 +63,6 @@ Eigen::MatrixXd calcMinimumJerkTraWithViaPoints(int via_num,
 Eigen::MatrixXd calcArc3dTra(double smp_time, double mov_time,
                              Eigen::MatrixXd center_point, Eigen::MatrixXd normal_vector, Eigen::MatrixXd start_point,
                              double rotation_angle, double cross_ratio);
-
-
-class FifthOrderPolynomialTrajectory
-{
-public:
-  FifthOrderPolynomialTrajectory(double initial_time, double initial_pos, double initial_vel, double initial_acc,
-                                 double final_time,   double final_pos,   double final_vel,   double final_acc);
-  FifthOrderPolynomialTrajectory();
-  ~FifthOrderPolynomialTrajectory();
-
-  bool changeTrajectory(double final_pos,   double final_vel,   double final_acc);
-  bool changeTrajectory(double final_time,   double final_pos,   double final_vel,   double final_acc);
-  bool changeTrajectory(double initial_time, double initial_pos, double initial_vel, double initial_acc,
-                        double final_time,   double final_pos,   double final_vel,   double final_acc);
-
-  double getPosition(double time);
-  double getVelocity(double time);
-  double getAcceleration(double time);
-
-  void setTime(double time);
-  double getPosition();
-  double getVelocity();
-  double getAcceleration();
-
-  double initial_time_;
-  double initial_pos_;
-  double initial_vel_;
-  double initial_acc_;
-
-  double current_time_;
-  double current_pos_;
-  double current_vel_;
-  double current_acc_;
-
-  double final_time_;
-  double final_pos_;
-  double final_vel_;
-  double final_acc_;
-
-  Eigen::MatrixXd position_coeff_;
-  Eigen::MatrixXd velocity_coeff_;
-  Eigen::MatrixXd acceleration_coeff_;
-  Eigen::MatrixXd time_variables_;
-};
 
 }
 

@@ -39,5 +39,6 @@
 #define ROBOTIS_MATH_ROBOTIS_MATH_H_
 
 #include "robotis_trajectory_calculator.h"
+#include "bezier_curve.h"
 
 #endif /* ROBOTIS_MATH_ROBOTIS_MATH_H_ */
