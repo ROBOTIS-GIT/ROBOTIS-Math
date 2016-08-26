@@ -38,6 +38,9 @@
 #ifndef ROBOTIS_MATH_ROBOTIS_TRAJECTORY_CALCULATOR_H_
 #define ROBOTIS_MATH_ROBOTIS_TRAJECTORY_CALCULATOR_H_
 
+#define EIGEN_NO_DEBUG
+#define EIGEN_NO_STATIC_ASSERT
+
 #include "robotis_linear_algebra.h"
 #include "robotis_math_base.h"
 #include "fifth_order_polynomial_trajectory.h"
