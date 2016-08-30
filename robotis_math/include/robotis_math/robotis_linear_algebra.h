@@ -38,10 +38,10 @@
 #ifndef ROBOTIS_MATH_ROBOTIS_LINEAR_ALGEBRA_H_
 #define ROBOTIS_MATH_ROBOTIS_LINEAR_ALGEBRA_H_
 
-#include <cmath>
-
 #define EIGEN_NO_DEBUG
 #define EIGEN_NO_STATIC_ASSERT
+
+#include <cmath>
 
 #include <Eigen/Dense>
 #include "step_data_define.h"

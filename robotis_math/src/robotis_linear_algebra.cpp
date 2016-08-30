@@ -259,7 +259,7 @@ Eigen::MatrixXd calcRodrigues(Eigen::MatrixXd hat_matrix, double angle)
 
 Eigen::MatrixXd convertRotToOmega(Eigen::MatrixXd rotation)
 {
-  double eps = 1e-12;
+  double eps = 1e-10;
 
   double alpha = (rotation.coeff(0,0)+rotation.coeff(1,1)+rotation.coeff(2,2)-1.0)/2.0;
   double alpha_dash = fabs( alpha - 1.0 );

@@ -172,10 +172,10 @@ Eigen::MatrixXd calcMinimumJerkTraPlus(
 }
 
 Eigen::MatrixXd calcMinimumJerkTraWithViaPoints(int via_num,
-    double pos_start, double vel_start, double accel_start,
-    Eigen::MatrixXd pos_via,  Eigen::MatrixXd vel_via, Eigen::MatrixXd accel_via,
-    double pos_end, double vel_end, double accel_end,
-    double smp_time, Eigen::MatrixXd via_time, double mov_time )
+                                                double pos_start, double vel_start, double accel_start,
+                                                Eigen::MatrixXd pos_via,  Eigen::MatrixXd vel_via, Eigen::MatrixXd accel_via,
+                                                double pos_end, double vel_end, double accel_end,
+                                                double smp_time, Eigen::MatrixXd via_time, double mov_time )
 /*
    minimum jerk trajectory with via-points
    (via-point constraints: position and velocity at each point)
@@ -364,6 +364,160 @@ Eigen::MatrixXd calcMinimumJerkTraWithViaPoints(int via_num,
   return minimum_jerk_tra_with_via_points;
 }
 
+Eigen::MatrixXd calcMinimumJerkTraWithViaPointsPosition(int via_num,
+                                                        double pos_start, double vel_start, double accel_start,
+                                                        Eigen::MatrixXd pos_via,
+                                                        double pos_end, double vel_end, double accel_end,
+                                                        double smp_time, Eigen::MatrixXd via_time, double mov_time)
+
+/* n is the number of via-points.
+
+   x0, v0 and a0 are initial values of
+   joint angle, angular velocity and angular acceleration.
+
+   x (Matirx) and dx (Matirx) are
+   joint angles and angular velocities at the via-points.
+
+   xf, vf and af are final values of
+   joint angle, angular velocity and angular acceleration.
+
+   smp is sampling time.
+
+   t (Matirx) is the time values passing via-points.
+
+   tf is movement time */
+
+{
+  int i,j,k ;
+
+  /* Calculation Matrix B	*/
+
+  Eigen::MatrixXd poly_vector = Eigen::MatrixXd::Zero(via_num+3,1);
+
+  for (i=1; i<=via_num; i++){
+    poly_vector.coeffRef(i-1,0) =
+        pos_via.coeff(i-1,0) -
+        pos_start -
+        vel_start*via_time.coeff(i-1,0) -
+        (accel_start/2)*pow(via_time.coeff(i-1,0),2) ;
+  }
+
+  poly_vector.coeffRef(via_num,0) =
+      pos_end -
+      pos_start -
+      vel_start*mov_time -
+      (accel_start/2)*pow(mov_time,2) ;
+
+  poly_vector.coeffRef(via_num+1,0) =
+      vel_end -
+      vel_start -
+      accel_start*mov_time ;
+
+  poly_vector.coeffRef(via_num+2,0) =
+      accel_end -
+      accel_start ;
+
+  /* Calculation Matrix A	*/
+
+  Eigen::MatrixXd poly_part1 = Eigen::MatrixXd::Zero(via_num, 3);
+
+  for (i = 1; i <= via_num; i++) {
+    poly_part1.coeffRef(i-1,0) = pow(via_time.coeff(i-1,0),3);
+    poly_part1.coeffRef(i-1,1) = pow(via_time.coeff(i-1,0),4);
+    poly_part1.coeffRef(i-1,2) = pow(via_time.coeff(i-1,0),5);
+  }
+
+  Eigen::MatrixXd poly_part2 = Eigen::MatrixXd::Zero(via_num, via_num);
+
+  for (i = 1; i <= via_num; i++) {
+    for (j = 1; j <= via_num; j++) {
+      if (i > j) {
+        k = i;
+      } else {
+        k = j;
+      }
+      poly_part2.coeffRef(j-1, i-1) = pow(
+          (via_time.coeff(k-1,0) - via_time.coeff(i-1,0)),5)/120;
+    }
+  }
+
+  Eigen::MatrixXd poly_part3 = Eigen::MatrixXd::Zero(3,via_num+3);
+
+  poly_part3.coeffRef(0,0) = pow(mov_time,3);
+  poly_part3.coeffRef(0,1) = pow(mov_time,4);
+  poly_part3.coeffRef(0,2) = pow(mov_time,5);
+
+  poly_part3.coeffRef(1,0) = 3 * pow(mov_time,2);
+  poly_part3.coeffRef(1,1) = 4 * pow(mov_time,3);
+  poly_part3.coeffRef(1,2) = 5 * pow(mov_time,4);
+
+  poly_part3.coeffRef(2,0) = 6 * mov_time;
+  poly_part3.coeffRef(2,1) = 12 * pow(mov_time,2);
+  poly_part3.coeffRef(2,2) = 20 * pow(mov_time,3);
+
+  for (i = 1; i <= via_num; i++) {
+    poly_part3.coeffRef(0, i+2) = pow(mov_time - via_time.coeff(i-1,0),5)/120;
+    poly_part3.coeffRef(1, i+2) = pow(mov_time - via_time.coeff(i-1,0),4)/24;
+    poly_part3.coeffRef(2, i+2) = pow(mov_time - via_time.coeff(i-1,0),3)/6;
+  }
+
+  Eigen::MatrixXd poly_matrix = Eigen::MatrixXd::Zero(via_num+3,via_num+3);
+
+  poly_matrix.block(0,0,via_num,3) = poly_part1;
+  poly_matrix.block(0,3,via_num,via_num) = poly_part2;
+  poly_matrix.block(via_num,0,3,via_num+3) = poly_part3;
+
+  /* Calculation Matrix C (coefficient of polynomial function) */
+
+  Eigen::MatrixXd poly_inv_matrix(2*via_num+3,1);
+  //C = A.inverse() * B;
+  poly_inv_matrix = poly_matrix.colPivHouseholderQr().solve(poly_vector);
+
+  /* Time */
+
+  int all_time_steps;
+  all_time_steps = round( int (mov_time/smp_time) ) ;
+
+  Eigen::MatrixXd time_vector = Eigen::MatrixXd::Zero(all_time_steps+1,1);
+
+  for (i=1; i<=all_time_steps+1; i++)
+    time_vector.coeffRef(i-1,0) = (i-1)*smp_time;
+
+  /* Time_via */
+  Eigen::MatrixXd via_time_vector = Eigen::MatrixXd::Zero(via_num,1);
+
+  for (i=1; i<=via_num; i++)
+    via_time_vector.coeffRef(i-1,0) = round(via_time.coeff(i-1,0)/smp_time)+2;
+
+  /* Minimum Jerk Trajectory with Via-points */
+
+  Eigen::MatrixXd minimum_jerk_tra_with_via_points = Eigen::MatrixXd::Zero(all_time_steps+1,1);
+
+  for (i=1; i<=all_time_steps+1; i++)
+  {
+    minimum_jerk_tra_with_via_points.coeffRef(i-1,0) =
+        pos_start +
+        vel_start*time_vector.coeff(i-1,0) +
+        0.5*accel_start*pow(time_vector.coeff(i-1,0),2) +
+        poly_inv_matrix.coeff(0,0)*pow(time_vector.coeff(i-1,0),3) +
+        poly_inv_matrix.coeff(1,0)*pow(time_vector.coeff(i-1,0),4) +
+        poly_inv_matrix.coeff(2,0)*pow(time_vector.coeff(i-1,0),5) ;
+  }
+
+  for (i=1; i<=via_num; i++)
+  {
+    for (j=via_time_vector.coeff(i-1,0); j<=all_time_steps+1; j++)
+    {
+      minimum_jerk_tra_with_via_points.coeffRef(j-1,0) =
+          minimum_jerk_tra_with_via_points.coeff(j-1,0) +
+          poly_inv_matrix.coeff(i+2,0)*pow((time_vector.coeff(j-1,0)-via_time.coeff(i-1,0)),5)/120 ;
+    }
+  }
+
+  return minimum_jerk_tra_with_via_points;
+
+}
+
 Eigen::MatrixXd calcArc3dTra(double smp_time, double mov_time,
     Eigen::MatrixXd center_point, Eigen::MatrixXd normal_vector, Eigen::MatrixXd start_point,
     double rotation_angle, double cross_ratio )
@@ -398,292 +552,6 @@ Eigen::MatrixXd calcArc3dTra(double smp_time, double mov_time,
   Eigen::MatrixXd act_tra_trans = arc_tra.transpose();
 
   return act_tra_trans;
-}
-
-
-
-FifthOrderPolynomialTrajectory::FifthOrderPolynomialTrajectory(double initial_time, double initial_pos, double initial_vel, double initial_acc,
-                                                               double final_time,   double final_pos,   double final_vel,   double final_acc)
-{
-  position_coeff_.resize(6, 1);
-  velocity_coeff_.resize(6, 1);
-  acceleration_coeff_.resize(6, 1);
-  time_variables_.resize(1, 6);
-
-  position_coeff_.fill(0);
-  velocity_coeff_.fill(0);
-  acceleration_coeff_.fill(0);
-  time_variables_.fill(0);
-
-  if(final_time > initial_time)
-  {
-    initial_time_ = initial_time;
-    initial_pos_  = initial_pos;
-    initial_vel_  = initial_vel;
-    initial_acc_  = initial_acc;
-
-    current_time_ = initial_time;
-    current_pos_  = initial_pos;
-    current_vel_  = initial_vel;
-    current_acc_  = initial_acc;
-
-    final_time_ = final_time;
-    final_pos_  = final_pos;
-    final_vel_  = final_vel;
-    final_acc_  = final_acc;
-
-    Eigen::MatrixXd time_mat;
-    Eigen::MatrixXd conditions_mat;
-
-    time_mat.resize(6,6);
-    time_mat <<  powDI(initial_time_, 5),     powDI(initial_time_, 4),      powDI(initial_time_, 3), powDI(initial_time_, 2), initial_time_, 1.0,
-             5.0*powDI(initial_time_, 4),  4.0*powDI(initial_time_, 3), 3.0*powDI(initial_time_, 2),    2.0*initial_time_,              1.0, 0.0,
-            20.0*powDI(initial_time_, 3), 12.0*powDI(initial_time_, 2), 6.0*initial_time_,              2.0,                            0.0, 0.0;
-                 powDI(final_time_, 5),      powDI(final_time_, 4),     powDI(final_time_, 3), powDI(final_time_, 2), final_time_, 1.0,
-             5.0*powDI(final_time_, 4),  4.0*powDI(final_time_, 3), 3.0*powDI(final_time_, 2),    2.0*final_time_,            1.0, 0.0,
-            20.0*powDI(final_time_, 3), 12.0*powDI(final_time_, 2), 6.0*final_time_,              2.0,                        0.0, 0.0;
-
-    conditions_mat.resize(6,1);
-    conditions_mat << initial_pos_, initial_vel_, initial_acc_, final_pos_, final_vel_, final_acc_;
-
-    position_coeff_ = time_mat.inverse() * conditions_mat;
-    velocity_coeff_ <<                            0.0,
-                       5.0*position_coeff_.coeff(0,0),
-                       4.0*position_coeff_.coeff(1,0),
-                       3.0*position_coeff_.coeff(2,0),
-                       2.0*position_coeff_.coeff(3,0),
-                       1.0*position_coeff_.coeff(4,0);
-    acceleration_coeff_ <<                            0.0,
-                                                      0.0,
-                          20.0*position_coeff_.coeff(0,0),
-                          12.0*position_coeff_.coeff(1,0),
-                           6.0*position_coeff_.coeff(2,0),
-                           2.0*position_coeff_.coeff(3,0);
-  }
-
-}
-
-FifthOrderPolynomialTrajectory::FifthOrderPolynomialTrajectory()
-{
-  initial_time_ = 0;
-  initial_pos_  = 0;
-  initial_vel_  = 0;
-  initial_acc_  = 0;
-
-  current_time_ = 0;
-  current_pos_  = 0;
-  current_vel_  = 0;
-  current_acc_  = 0;
-
-  final_time_ = 0;
-  final_pos_  = 0;
-  final_vel_  = 0;
-  final_acc_  = 0;
-
-  position_coeff_.resize(6, 1);
-  velocity_coeff_.resize(6, 1);
-  acceleration_coeff_.resize(6, 1);
-  time_variables_.resize(1, 6);
-
-  position_coeff_.fill(0);
-  velocity_coeff_.fill(0);
-  acceleration_coeff_.fill(0);
-  time_variables_.fill(0);
-}
-
-FifthOrderPolynomialTrajectory::~FifthOrderPolynomialTrajectory()
-{
-
-}
-
-bool FifthOrderPolynomialTrajectory::changeTrajectory(double final_pos,   double final_vel,   double final_acc)
-{
-  final_pos_  = final_pos;
-  final_vel_  = final_vel;
-  final_acc_  = final_acc;
-
-  Eigen::MatrixXd time_mat;
-  Eigen::MatrixXd conditions_mat;
-
-  time_mat.resize(6,6);
-  time_mat <<  powDI(initial_time_, 5),     powDI(initial_time_, 4),      powDI(initial_time_, 3), powDI(initial_time_, 2), initial_time_, 1.0,
-           5.0*powDI(initial_time_, 4),  4.0*powDI(initial_time_, 3), 3.0*powDI(initial_time_, 2),    2.0*initial_time_,              1.0, 0.0,
-          20.0*powDI(initial_time_, 3), 12.0*powDI(initial_time_, 2), 6.0*initial_time_,              2.0,                            0.0, 0.0,
-               powDI(final_time_, 5),      powDI(final_time_, 4),     powDI(final_time_, 3), powDI(final_time_, 2), final_time_, 1.0,
-           5.0*powDI(final_time_, 4),  4.0*powDI(final_time_, 3), 3.0*powDI(final_time_, 2),    2.0*final_time_,            1.0, 0.0,
-          20.0*powDI(final_time_, 3), 12.0*powDI(final_time_, 2), 6.0*final_time_,              2.0,                        0.0, 0.0;
-
-  conditions_mat.resize(6,1);
-  conditions_mat << initial_pos_, initial_vel_, initial_acc_, final_pos_, final_vel_, final_acc_;
-
-  position_coeff_ = time_mat.inverse() * conditions_mat;
-  velocity_coeff_ <<                            0.0,
-                     5.0*position_coeff_.coeff(0,0),
-                     4.0*position_coeff_.coeff(1,0),
-                     3.0*position_coeff_.coeff(2,0),
-                     2.0*position_coeff_.coeff(3,0),
-                     1.0*position_coeff_.coeff(4,0);
-  acceleration_coeff_ <<                            0.0,
-                                                    0.0,
-                         20.0*position_coeff_.coeff(0,0),
-                         12.0*position_coeff_.coeff(1,0),
-                          6.0*position_coeff_.coeff(2,0),
-                          2.0*position_coeff_.coeff(3,0);
-
-  return true;
-}
-
-bool FifthOrderPolynomialTrajectory::changeTrajectory(double final_time,   double final_pos,   double final_vel,   double final_acc)
-{
-  if(final_time < initial_time_)
-    return false;
-
-  final_time_ = final_time;
-  return changeTrajectory(final_pos, final_vel, final_acc);
-}
-
-bool FifthOrderPolynomialTrajectory::changeTrajectory(double initial_time, double initial_pos, double initial_vel, double initial_acc,
-                                                      double final_time,   double final_pos,   double final_vel,   double final_acc)
-{
-  if(final_time < initial_time)
-    return false;
-
-  initial_time_ = initial_time;
-  initial_pos_  = initial_pos;
-  initial_vel_  = initial_vel;
-  initial_acc_  = initial_acc;
-
-  final_time_ = final_time;
-
-  return changeTrajectory(final_pos, final_vel, final_acc);
-}
-
-double FifthOrderPolynomialTrajectory::getPosition(double time)
-{
-  if(time >= final_time_)
-  {
-    current_time_ = final_time_;
-    current_pos_  = final_pos_;
-    current_vel_  = final_vel_;
-    current_acc_  = final_acc_;
-    return final_pos_;
-  }
-  else if(time <= initial_time_ )
-  {
-    current_time_ = initial_time_;
-    current_pos_  = initial_pos_;
-    current_vel_  = initial_vel_;
-    current_acc_  = initial_acc_;
-    return initial_pos_;
-  }
-  else
-  {
-    current_time_ = time;
-    time_variables_ << powDI(time, 5), powDI(time, 4), powDI(time, 3), powDI(time, 2), time, 1.0;
-    current_pos_ = (time_variables_ * position_coeff_).coeff(0,0);
-    current_vel_ = (time_variables_ * velocity_coeff_).coeff(0,0);
-    current_acc_ = (time_variables_ * acceleration_coeff_).coeff(0,0);
-    return current_pos_;
-  }
-}
-
-double FifthOrderPolynomialTrajectory::getVelocity(double time)
-{
-  if(time >= final_time_)
-  {
-    current_time_ = final_time_;
-    current_pos_  = final_pos_;
-    current_vel_  = final_vel_;
-    current_acc_  = final_acc_;
-    return final_vel_;
-  }
-  else if(time <= initial_time_ )
-  {
-    current_time_ = initial_time_;
-    current_pos_  = initial_pos_;
-    current_vel_  = initial_vel_;
-    current_acc_  = initial_acc_;
-    return initial_vel_;
-  }
-  else
-  {
-    current_time_ = time;
-    time_variables_ << powDI(time, 5), powDI(time, 4), powDI(time, 3), powDI(time, 2), time, 1.0;
-    current_pos_ = (time_variables_ * position_coeff_).coeff(0,0);
-    current_vel_ = (time_variables_ * velocity_coeff_).coeff(0,0);
-    current_acc_ = (time_variables_ * acceleration_coeff_).coeff(0,0);
-    return current_vel_;
-  }
-}
-
-double FifthOrderPolynomialTrajectory::getAcceleration(double time)
-{
-  if(time >= final_time_)
-  {
-    current_time_ = final_time_;
-    current_pos_  = final_pos_;
-    current_vel_  = final_vel_;
-    current_acc_  = final_acc_;
-    return final_acc_;
-  }
-  else if(time <= initial_time_ )
-  {
-    current_time_ = initial_time_;
-    current_pos_  = initial_pos_;
-    current_vel_  = initial_vel_;
-    current_acc_  = initial_acc_;
-    return initial_acc_;
-  }
-  else
-  {
-    current_time_ = time;
-    time_variables_ << powDI(time, 5), powDI(time, 4), powDI(time, 3), powDI(time, 2), time, 1.0;
-    current_pos_ = (time_variables_ * position_coeff_).coeff(0,0);
-    current_vel_ = (time_variables_ * velocity_coeff_).coeff(0,0);
-    current_acc_ = (time_variables_ * acceleration_coeff_).coeff(0,0);
-    return current_acc_;
-  }
-}
-
-void FifthOrderPolynomialTrajectory::setTime(double time)
-{
-  if(time >= final_time_)
-  {
-    current_time_ = final_time_;
-    current_pos_  = final_pos_;
-    current_vel_  = final_vel_;
-    current_acc_  = final_acc_;
-  }
-  else if(time <= initial_time_ )
-  {
-    current_time_ = initial_time_;
-    current_pos_  = initial_pos_;
-    current_vel_  = initial_vel_;
-    current_acc_  = initial_acc_;
-  }
-  else
-  {
-    current_time_ = time;
-    time_variables_ << powDI(time, 5), powDI(time, 4), powDI(time, 3), powDI(time, 2), time, 1.0;
-    current_pos_ = (time_variables_ * position_coeff_).coeff(0,0);
-    current_vel_ = (time_variables_ * velocity_coeff_).coeff(0,0);
-    current_acc_ = (time_variables_ * acceleration_coeff_).coeff(0,0);
-  }
-}
-
-double FifthOrderPolynomialTrajectory::getPosition()
-{
-  return current_pos_;
-}
-
-double FifthOrderPolynomialTrajectory::getVelocity()
-{
-  return current_vel_;
-}
-
-double FifthOrderPolynomialTrajectory::getAcceleration()
-{
-  return current_acc_;
 }
 
 }
