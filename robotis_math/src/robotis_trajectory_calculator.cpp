@@ -172,10 +172,10 @@ Eigen::MatrixXd calcMinimumJerkTraPlus(
 }
 
 Eigen::MatrixXd calcMinimumJerkTraWithViaPoints(int via_num,
-    double pos_start, double vel_start, double accel_start,
-    Eigen::MatrixXd pos_via,  Eigen::MatrixXd vel_via, Eigen::MatrixXd accel_via,
-    double pos_end, double vel_end, double accel_end,
-    double smp_time, Eigen::MatrixXd via_time, double mov_time )
+                                                double pos_start, double vel_start, double accel_start,
+                                                Eigen::MatrixXd pos_via,  Eigen::MatrixXd vel_via, Eigen::MatrixXd accel_via,
+                                                double pos_end, double vel_end, double accel_end,
+                                                double smp_time, Eigen::MatrixXd via_time, double mov_time )
 /*
    minimum jerk trajectory with via-points
    (via-point constraints: position and velocity at each point)
@@ -362,6 +362,160 @@ Eigen::MatrixXd calcMinimumJerkTraWithViaPoints(int via_num,
   }
 
   return minimum_jerk_tra_with_via_points;
+}
+
+Eigen::MatrixXd calcMinimumJerkTraWithViaPointsPosition(int via_num,
+                                                        double pos_start, double vel_start, double accel_start,
+                                                        Eigen::MatrixXd pos_via,
+                                                        double pos_end, double vel_end, double accel_end,
+                                                        double smp_time, Eigen::MatrixXd via_time, double mov_time)
+
+/* n is the number of via-points.
+
+   x0, v0 and a0 are initial values of
+   joint angle, angular velocity and angular acceleration.
+
+   x (Matirx) and dx (Matirx) are
+   joint angles and angular velocities at the via-points.
+
+   xf, vf and af are final values of
+   joint angle, angular velocity and angular acceleration.
+
+   smp is sampling time.
+
+   t (Matirx) is the time values passing via-points.
+
+   tf is movement time */
+
+{
+  int i,j,k ;
+
+  /* Calculation Matrix B	*/
+
+  Eigen::MatrixXd poly_vector = Eigen::MatrixXd::Zero(via_num+3,1);
+
+  for (i=1; i<=via_num; i++){
+    poly_vector.coeffRef(i-1,0) =
+        pos_via.coeff(i-1,0) -
+        pos_start -
+        vel_start*via_time.coeff(i-1,0) -
+        (accel_start/2)*pow(via_time.coeff(i-1,0),2) ;
+  }
+
+  poly_vector.coeffRef(via_num,0) =
+      pos_end -
+      pos_start -
+      vel_start*mov_time -
+      (accel_start/2)*pow(mov_time,2) ;
+
+  poly_vector.coeffRef(via_num+1,0) =
+      vel_end -
+      vel_start -
+      accel_start*mov_time ;
+
+  poly_vector.coeffRef(via_num+2,0) =
+      accel_end -
+      accel_start ;
+
+  /* Calculation Matrix A	*/
+
+  Eigen::MatrixXd poly_part1 = Eigen::MatrixXd::Zero(via_num, 3);
+
+  for (i = 1; i <= via_num; i++) {
+    poly_part1.coeffRef(i-1,0) = pow(via_time.coeff(i-1,0),3);
+    poly_part1.coeffRef(i-1,1) = pow(via_time.coeff(i-1,0),4);
+    poly_part1.coeffRef(i-1,2) = pow(via_time.coeff(i-1,0),5);
+  }
+
+  Eigen::MatrixXd poly_part2 = Eigen::MatrixXd::Zero(via_num, via_num);
+
+  for (i = 1; i <= via_num; i++) {
+    for (j = 1; j <= via_num; j++) {
+      if (i > j) {
+        k = i;
+      } else {
+        k = j;
+      }
+      poly_part2.coeffRef(j-1, i-1) = pow(
+          (via_time.coeff(k-1,0) - via_time.coeff(i-1,0)),5)/120;
+    }
+  }
+
+  Eigen::MatrixXd poly_part3 = Eigen::MatrixXd::Zero(3,via_num+3);
+
+  poly_part3.coeffRef(0,0) = pow(mov_time,3);
+  poly_part3.coeffRef(0,1) = pow(mov_time,4);
+  poly_part3.coeffRef(0,2) = pow(mov_time,5);
+
+  poly_part3.coeffRef(1,0) = 3 * pow(mov_time,2);
+  poly_part3.coeffRef(1,1) = 4 * pow(mov_time,3);
+  poly_part3.coeffRef(1,2) = 5 * pow(mov_time,4);
+
+  poly_part3.coeffRef(2,0) = 6 * mov_time;
+  poly_part3.coeffRef(2,1) = 12 * pow(mov_time,2);
+  poly_part3.coeffRef(2,2) = 20 * pow(mov_time,3);
+
+  for (i = 1; i <= via_num; i++) {
+    poly_part3.coeffRef(0, i+2) = pow(mov_time - via_time.coeff(i-1,0),5)/120;
+    poly_part3.coeffRef(1, i+2) = pow(mov_time - via_time.coeff(i-1,0),4)/24;
+    poly_part3.coeffRef(2, i+2) = pow(mov_time - via_time.coeff(i-1,0),3)/6;
+  }
+
+  Eigen::MatrixXd poly_matrix = Eigen::MatrixXd::Zero(via_num+3,via_num+3);
+
+  poly_matrix.block(0,0,via_num,3) = poly_part1;
+  poly_matrix.block(0,3,via_num,via_num) = poly_part2;
+  poly_matrix.block(via_num,0,3,via_num+3) = poly_part3;
+
+  /* Calculation Matrix C (coefficient of polynomial function) */
+
+  Eigen::MatrixXd poly_inv_matrix(2*via_num+3,1);
+  //C = A.inverse() * B;
+  poly_inv_matrix = poly_matrix.colPivHouseholderQr().solve(poly_vector);
+
+  /* Time */
+
+  int all_time_steps;
+  all_time_steps = round( int (mov_time/smp_time) ) ;
+
+  Eigen::MatrixXd time_vector = Eigen::MatrixXd::Zero(all_time_steps+1,1);
+
+  for (i=1; i<=all_time_steps+1; i++)
+    time_vector.coeffRef(i-1,0) = (i-1)*smp_time;
+
+  /* Time_via */
+  Eigen::MatrixXd via_time_vector = Eigen::MatrixXd::Zero(via_num,1);
+
+  for (i=1; i<=via_num; i++)
+    via_time_vector.coeffRef(i-1,0) = round(via_time.coeff(i-1,0)/smp_time)+2;
+
+  /* Minimum Jerk Trajectory with Via-points */
+
+  Eigen::MatrixXd minimum_jerk_tra_with_via_points = Eigen::MatrixXd::Zero(all_time_steps+1,1);
+
+  for (i=1; i<=all_time_steps+1; i++)
+  {
+    minimum_jerk_tra_with_via_points.coeffRef(i-1,0) =
+        pos_start +
+        vel_start*time_vector.coeff(i-1,0) +
+        0.5*accel_start*pow(time_vector.coeff(i-1,0),2) +
+        poly_inv_matrix.coeff(0,0)*pow(time_vector.coeff(i-1,0),3) +
+        poly_inv_matrix.coeff(1,0)*pow(time_vector.coeff(i-1,0),4) +
+        poly_inv_matrix.coeff(2,0)*pow(time_vector.coeff(i-1,0),5) ;
+  }
+
+  for (i=1; i<=via_num; i++)
+  {
+    for (j=via_time_vector.coeff(i-1,0); j<=all_time_steps+1; j++)
+    {
+      minimum_jerk_tra_with_via_points.coeffRef(j-1,0) =
+          minimum_jerk_tra_with_via_points.coeff(j-1,0) +
+          poly_inv_matrix.coeff(i+2,0)*pow((time_vector.coeff(j-1,0)-via_time.coeff(i-1,0)),5)/120 ;
+    }
+  }
+
+  return minimum_jerk_tra_with_via_points;
+
 }
 
 Eigen::MatrixXd calcArc3dTra(double smp_time, double mov_time,

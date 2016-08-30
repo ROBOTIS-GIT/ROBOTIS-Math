@@ -63,6 +63,12 @@ Eigen::MatrixXd calcMinimumJerkTraWithViaPoints(int via_num,
                                                 double pos_end, double vel_end, double accel_end,
                                                 double smp_time, Eigen::MatrixXd via_time, double mov_time);
 
+Eigen::MatrixXd calcMinimumJerkTraWithViaPointsPosition(int via_num,
+                                                        double pos_start, double vel_start, double accel_start,
+                                                        Eigen::MatrixXd pos_via,
+                                                        double pos_end, double vel_end, double accel_end,
+                                                        double smp_time, Eigen::MatrixXd via_time, double mov_time);
+
 Eigen::MatrixXd calcArc3dTra(double smp_time, double mov_time,
                              Eigen::MatrixXd center_point, Eigen::MatrixXd normal_vector, Eigen::MatrixXd start_point,
                              double rotation_angle, double cross_ratio);
