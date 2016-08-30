@@ -38,6 +38,8 @@
 #ifndef ROBOTIS_MATH_STEP_DATA_DEFINE_H_
 #define ROBOTIS_MATH_STEP_DATA_DEFINE_H_
 
+#include <ostream>
+
 namespace robotis_framework
 {
 
@@ -78,6 +80,10 @@ typedef struct
   StepTimeData     time_data;
 } StepData;
 
+std::ostream& operator<<(std::ostream& out, const Pose3D& pose);
+std::ostream& operator<<(std::ostream& out, const StepPositionData& position_data);
+std::ostream& operator<<(std::ostream& out, const StepTimeData& time_data);
+std::ostream& operator<<(std::ostream& out, const StepData& step_data);
 }
 
 #endif /* ROBOTIS_MATH_STEP_DATA_DEFINE_H_ */

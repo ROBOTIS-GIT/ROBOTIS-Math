@@ -47,6 +47,7 @@ add_library(robotis_math
    src/simple_trapezoidal_velocity_profile.cpp
    src/robotis_linear_algebra.cpp
    src/bezier_curve.cpp
+   src/step_data_define.cpp
 )
 
 add_dependencies(robotis_math ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
