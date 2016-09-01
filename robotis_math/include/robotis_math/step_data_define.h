@@ -57,6 +57,7 @@ typedef struct
 {
   int    moving_foot;
   double foot_z_swap, body_z_swap;
+  double x_zmp_shift, y_zmp_shift;
   double shoulder_swing_gain, elbow_swing_gain;
   double waist_roll_angle, waist_pitch_angle, waist_yaw_angle;
   Pose3D left_foot_pose;

@@ -39,6 +39,7 @@ std::ostream& operator<<(std::ostream& out, const StepPositionData& position_dat
   out << "[  BODY] " << position_data.body_pose << "\n";
   out << "[ WAIST] " << "r/p/y: " << position_data.waist_roll_angle << "/" << position_data.waist_pitch_angle << "/" << position_data.waist_yaw_angle << "\n";
   out << "[PARAMS] " << "moving_foot: " << dispatchMovingFoot(position_data.moving_foot) << " | foot_z_swap: " << position_data.foot_z_swap << " | body_z_swap: " << position_data.body_z_swap << "\n";
+  out << "[PARAMS] " << "x_zmp_shift: " << position_data.x_zmp_shift  << " | y_zmp_shift: " << position_data.y_zmp_shift << "\n";
   out << "[PARAMS] " << "shoulder_swing_gain: " << position_data.shoulder_swing_gain << " | elbow_swing_gain: " << position_data.elbow_swing_gain;
   return out;
 }
