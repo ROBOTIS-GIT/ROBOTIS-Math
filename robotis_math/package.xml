@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>robotis_math</name>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <description>
     This package is a set of basic math fuctions for ROBOTIS's robots.
     We provide some linear algebra and trajectory generation funntions and classes.
