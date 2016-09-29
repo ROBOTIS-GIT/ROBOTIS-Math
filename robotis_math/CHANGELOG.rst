@@ -2,6 +2,11 @@
 Changelog for package robotis_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2016-09-29)
+-----------
+* included eigen3 option
+* Contributors: SCH
+
 0.2.1 (2016-09-02)
 -----------
 * bug fix and changed some variable name
