@@ -2,6 +2,12 @@
 Changelog for package robotis_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.1 (2016-09-02)
+-----------
+* bug fix and changed some variable name
+* Modify StepData
+* Contributors: Jay Song
+
 0.2.0 (2016-08-31)
 -----------
 * merged pull request `#4 <https://github.com/ROBOTIS-GIT/ROBOTIS-Math/issues/4>`_ from thor-mang/pr_step_data_to_string
@@ -17,4 +23,4 @@ Changelog for package robotis_math
 * first public release for Kinetic
 * modified the package information files
 * Add robotis_math, robotis_math is moved from ROBOTIS-Framework repository.
-* Contributors: Jay-Song, pyo
+* Contributors: Jay Song, Pyo
