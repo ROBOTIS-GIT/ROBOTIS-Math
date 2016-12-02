@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package>
+  <name>scilab_optimization</name>
+  <version>0.0.0</version>
+  <description>The scilab_optimization package</description>
+  <license>BSD</license>
+  <author email="sch@robotis.com">sch</author>
+  <maintainer email="sch@robotis.com">sch</maintainer>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <run_depend>roscpp</run_depend>
+  <export></export>
+</package>
