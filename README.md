@@ -1,3 +1,4 @@
 # ROBOTIS-Math
 
-sudo apt-get install scilab
+Required for scilab-optimization package
+$ sudo apt-get install scilab
