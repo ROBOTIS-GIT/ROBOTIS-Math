@@ -72,7 +72,7 @@ Eigen::Vector3d convertRotToOmega(const Eigen::Matrix3d& rotation);
 Eigen::Vector3d calcCross(const Eigen::Vector3d& vector3d_a, const Eigen::Vector3d& vector3d_b);
 double calcInner(const Eigen::MatrixXd& vector3d_a, const Eigen::MatrixXd& vector3d_b);
 
-Pose3D getPose3DfromTransformMatrix(const Eigen::MatrixXd& transform);
+Pose3D getPose3DfromTransformMatrix(const Eigen::Matrix4d& transform);
 
 }
 

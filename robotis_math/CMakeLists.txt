@@ -9,10 +9,9 @@ project(robotis_math)
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  cmake_modules
 )
 
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 ################################################################################
 # Declare ROS messages, services and actions
@@ -29,6 +28,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES robotis_math
   CATKIN_DEPENDS roscpp
+  DEPENDS EIGEN3
 )
 
 ################################################################################
@@ -37,7 +37,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
 )
 
 add_library(robotis_math

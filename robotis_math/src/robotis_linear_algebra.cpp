@@ -301,7 +301,7 @@ double calcInner(Eigen::MatrixXd vector3d_a, Eigen::MatrixXd vector3d_b)
   return vector3d_a.dot(vector3d_b);
 }
 
-Pose3D getPose3DfromTransformMatrix(const Eigen::MatrixXd& transform)
+Pose3D getPose3DfromTransformMatrix(const Eigen::Matrix4d& transform)
 {
   Pose3D pose_3d;
 
