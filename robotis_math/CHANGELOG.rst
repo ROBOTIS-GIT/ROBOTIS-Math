@@ -2,6 +2,12 @@
 Changelog for package robotis_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.3 (2017-04-24)
+-----------
+* changed matrices to fixed size matrix
+* changed dynamic size mat to fixed size mat for performence
+* Contributors: Jay Song
+
 0.2.2 (2016-09-29)
 -----------
 * included eigen3 option
