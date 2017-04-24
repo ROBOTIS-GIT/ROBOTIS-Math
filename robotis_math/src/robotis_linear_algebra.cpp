@@ -40,9 +40,9 @@
 namespace robotis_framework
 {
 
-Eigen::MatrixXd getTransitionXYZ(double position_x, double position_y, double position_z)
+Eigen::Vector3d getTransitionXYZ(double position_x, double position_y, double position_z)
 {
-  Eigen::MatrixXd position(3,1);
+  Eigen::Vector3d position;
 
   position <<
       position_x,
@@ -52,9 +52,9 @@ Eigen::MatrixXd getTransitionXYZ(double position_x, double position_y, double po
   return position;
 }
 
-Eigen::MatrixXd getTransformationXYZRPY(double position_x, double position_y, double position_z , double roll , double pitch , double yaw)
+Eigen::Matrix4d getTransformationXYZRPY(double position_x, double position_y, double position_z , double roll , double pitch , double yaw)
 {
-  Eigen::MatrixXd transformation = getRotation4d(roll, pitch, yaw);
+  Eigen::Matrix4d transformation = getRotation4d(roll, pitch, yaw);
   transformation.coeffRef(0,3) = position_x;
   transformation.coeffRef(1,3) = position_y;
   transformation.coeffRef(2,3) = position_z;
@@ -62,13 +62,13 @@ Eigen::MatrixXd getTransformationXYZRPY(double position_x, double position_y, do
   return transformation;
 }
 
-Eigen::MatrixXd getInverseTransformation(Eigen::MatrixXd transform)
+Eigen::Matrix4d getInverseTransformation(const Eigen::MatrixXd& transform)
 {
   // If T is Transform Matrix A from B, the BOA is translation component coordi. B to coordi. A
 
   Eigen::Vector3d vec_boa;
   Eigen::Vector3d vec_x, vec_y, vec_z;
-  Eigen::MatrixXd inv_t(4,4);
+  Eigen::Matrix4d inv_t;
 
   vec_boa(0) = -transform(0,3);
   vec_boa(1) = -transform(1,3);
@@ -87,9 +87,9 @@ Eigen::MatrixXd getInverseTransformation(Eigen::MatrixXd transform)
   return inv_t;
 }
 
-Eigen::MatrixXd getInertiaXYZ(double ixx, double ixy, double ixz , double iyy , double iyz, double izz)
+Eigen::Matrix3d getInertiaXYZ(double ixx, double ixy, double ixz , double iyy , double iyz, double izz)
 {
-  Eigen::MatrixXd inertia(3,3);
+  Eigen::Matrix3d inertia;
 
   inertia <<
       ixx, ixy, ixz,
@@ -99,9 +99,9 @@ Eigen::MatrixXd getInertiaXYZ(double ixx, double ixy, double ixz , double iyy , 
   return inertia;
 }
 
-Eigen::MatrixXd getRotationX(double angle)
+Eigen::Matrix3d getRotationX(double angle)
 {
-  Eigen::MatrixXd rotation(3,3);
+  Eigen::Matrix3d rotation(3,3);
 
   rotation <<
       1.0, 0.0, 0.0,
@@ -111,9 +111,9 @@ Eigen::MatrixXd getRotationX(double angle)
   return rotation;
 }
 
-Eigen::MatrixXd getRotationY(double angle)
+Eigen::Matrix3d getRotationY(double angle)
 {
-  Eigen::MatrixXd rotation(3,3);
+  Eigen::Matrix3d rotation(3,3);
 
   rotation <<
       cos(angle), 0.0, sin(angle),
@@ -123,9 +123,9 @@ Eigen::MatrixXd getRotationY(double angle)
   return rotation;
 }
 
-Eigen::MatrixXd getRotationZ(double angle)
+Eigen::Matrix3d getRotationZ(double angle)
 {
-  Eigen::MatrixXd rotation(3,3);
+  Eigen::Matrix3d rotation(3,3);
 
   rotation <<
       cos(angle), -sin(angle), 0.0,
@@ -135,15 +135,15 @@ Eigen::MatrixXd getRotationZ(double angle)
   return rotation;
 }
 
-Eigen::MatrixXd getRotation4d(double roll, double pitch, double yaw )
+Eigen::Matrix4d getRotation4d(double roll, double pitch, double yaw )
 {
   double sr = sin(roll), cr = cos(roll);
   double sp = sin(pitch), cp = cos(pitch);
   double sy = sin(yaw), cy = cos(yaw);
 
-  Eigen::MatrixXd mat_roll(4,4);
-  Eigen::MatrixXd mat_pitch(4,4);
-  Eigen::MatrixXd mat_yaw(4,4);
+  Eigen::Matrix4d mat_roll;
+  Eigen::Matrix4d mat_pitch;
+  Eigen::Matrix4d mat_yaw;
 
   mat_roll <<
       1, 0, 0, 0,
@@ -163,14 +163,14 @@ Eigen::MatrixXd getRotation4d(double roll, double pitch, double yaw )
       0, 0, 1, 0,
       0, 0, 0, 1;
 
-  Eigen::MatrixXd mat_rpy = (mat_yaw*mat_pitch)*mat_roll;
+  Eigen::Matrix4d mat_rpy = (mat_yaw*mat_pitch)*mat_roll;
 
   return mat_rpy;
 }
 
-Eigen::MatrixXd getTranslation4D(double position_x, double position_y, double position_z)
+Eigen::Matrix4d getTranslation4D(double position_x, double position_y, double position_z)
 {
-  Eigen::MatrixXd mat_translation(4,4);
+  Eigen::Matrix4d mat_translation;
 
   mat_translation <<
       1, 0, 0, position_x,
@@ -181,9 +181,9 @@ Eigen::MatrixXd getTranslation4D(double position_x, double position_y, double po
   return mat_translation;
 }
 
-Eigen::MatrixXd convertRotationToRPY(Eigen::MatrixXd rotation)
+Eigen::Vector3d convertRotationToRPY(const Eigen::Matrix3d& rotation)
 {
-  Eigen::MatrixXd rpy = Eigen::MatrixXd::Zero(3,1);
+  Eigen::Vector3d rpy;// = Eigen::MatrixXd::Zero(3,1);
 
   rpy.coeffRef(0,0) = atan2(rotation.coeff(2,1), rotation.coeff(2,2));
   rpy.coeffRef(1,0) = atan2(-rotation.coeff(2,0), sqrt(pow(rotation.coeff(2,1), 2) + pow(rotation.coeff(2,2),2)));
@@ -192,52 +192,44 @@ Eigen::MatrixXd convertRotationToRPY(Eigen::MatrixXd rotation)
   return rpy;
 }
 
-Eigen::MatrixXd convertRPYToRotation(double roll, double pitch, double yaw)
+Eigen::Matrix3d convertRPYToRotation(double roll, double pitch, double yaw)
 {
-  Eigen::MatrixXd rotation = getRotationZ(yaw)*getRotationY(pitch)*getRotationX(roll);
+  Eigen::Matrix3d rotation = getRotationZ(yaw)*getRotationY(pitch)*getRotationX(roll);
 
   return rotation;
 }
 
 Eigen::Quaterniond convertRPYToQuaternion(double roll, double pitch, double yaw)
 {
-  Eigen::MatrixXd rotation = convertRPYToRotation(roll,pitch,yaw);
-
-  Eigen::Matrix3d rotation3d;
-  rotation3d = rotation.block<3,3>(0,0);
-
   Eigen::Quaterniond quaternion;
-  quaternion = rotation3d;
+  quaternion = convertRPYToRotation(roll,pitch,yaw);
 
   return quaternion;
 }
 
-Eigen::Quaterniond convertRotationToQuaternion(Eigen::MatrixXd rotation)
+Eigen::Quaterniond convertRotationToQuaternion(const Eigen::Matrix3d& rotation)
 {
-  Eigen::Matrix3d rotation3d;
-  rotation3d = rotation.block<3,3>(0,0);
-
   Eigen::Quaterniond quaternion;
-  quaternion = rotation3d;
+  quaternion = rotation;
 
   return quaternion;
 }
 
-Eigen::MatrixXd convertQuaternionToRPY(Eigen::Quaterniond quaternion)
+Eigen::Vector3d convertQuaternionToRPY(const Eigen::Quaterniond& quaternion)
 {
-  Eigen::MatrixXd rpy = convertRotationToRPY(quaternion.toRotationMatrix());
+  Eigen::Vector3d rpy = convertRotationToRPY(quaternion.toRotationMatrix());
 
   return rpy;
 }
 
-Eigen::MatrixXd convertQuaternionToRotation(Eigen::Quaterniond quaternion)
+Eigen::Matrix3d convertQuaternionToRotation(const Eigen::Quaterniond& quaternion)
 {
-  Eigen::MatrixXd rotation = quaternion.toRotationMatrix();
+  Eigen::Matrix3d rotation = quaternion.toRotationMatrix();
 
   return rotation;
 }
 
-Eigen::MatrixXd calcHatto(Eigen::MatrixXd matrix3d)
+Eigen::Matrix3d calcHatto(const Eigen::Vector3d& matrix3d)
 {
   Eigen::MatrixXd hatto(3,3);
 
@@ -249,22 +241,26 @@ Eigen::MatrixXd calcHatto(Eigen::MatrixXd matrix3d)
   return hatto;
 }
 
-Eigen::MatrixXd calcRodrigues(Eigen::MatrixXd hat_matrix, double angle)
+Eigen::Matrix3d calcRodrigues(const Eigen::Matrix3d& hat_matrix, double angle)
 {
-  Eigen::MatrixXd identity = Eigen::MatrixXd::Identity(3,3);
-  Eigen::MatrixXd rodrigues = identity+hat_matrix*sin(angle)+hat_matrix*hat_matrix*(1-cos(angle));
+//  Eigen::MatrixXd identity = Eigen::MatrixXd::Identity(3,3);
+//  Eigen::MatrixXd rodrigues = identity+hat_matrix*sin(angle)+hat_matrix*hat_matrix*(1-cos(angle));
+  Eigen::Matrix3d rodrigues = hat_matrix*sin(angle)+hat_matrix*hat_matrix*(1-cos(angle));
+  rodrigues.coeffRef(0,0) += 1;
+  rodrigues.coeffRef(1,1) += 1;
+  rodrigues.coeffRef(2,2) += 1;
 
   return rodrigues;
 }
 
-Eigen::MatrixXd convertRotToOmega(Eigen::MatrixXd rotation)
+Eigen::Vector3d convertRotToOmega(const Eigen::Matrix3d& rotation)
 {
   double eps = 1e-10;
 
   double alpha = (rotation.coeff(0,0)+rotation.coeff(1,1)+rotation.coeff(2,2)-1.0)/2.0;
   double alpha_dash = fabs( alpha - 1.0 );
 
-  Eigen::MatrixXd rot_to_omega(3,1);
+  Eigen::Vector3d rot_to_omega;
 
   if( alpha_dash < eps )
   {
@@ -288,9 +284,9 @@ Eigen::MatrixXd convertRotToOmega(Eigen::MatrixXd rotation)
   return rot_to_omega;
 }
 
-Eigen::MatrixXd calcCross(Eigen::MatrixXd vector3d_a, Eigen::MatrixXd vector3d_b)
+Eigen::Vector3d calcCross(const Eigen::Vector3d& vector3d_a, const Eigen::Vector3d& vector3d_b)
 {
-  Eigen::MatrixXd cross(3,1);
+  Eigen::Vector3d cross;
 
   cross <<
       vector3d_a.coeff(1,0)*vector3d_b.coeff(2,0)-vector3d_a.coeff(2,0)*vector3d_b.coeff(1,0),
@@ -305,7 +301,7 @@ double calcInner(Eigen::MatrixXd vector3d_a, Eigen::MatrixXd vector3d_b)
   return vector3d_a.dot(vector3d_b);
 }
 
-Pose3D getPose3DfromTransformMatrix(Eigen::MatrixXd transform)
+Pose3D getPose3DfromTransformMatrix(const Eigen::Matrix4d& transform)
 {
   Pose3D pose_3d;
 
