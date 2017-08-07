@@ -38,6 +38,7 @@
 #ifndef ROBOTIS_MATH_ROBOTIS_MATH_BASE_H_
 #define ROBOTIS_MATH_ROBOTIS_MATH_BASE_H_
 
+#include <iostream>
 #include <cmath>
 
 namespace robotis_framework

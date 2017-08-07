@@ -28,8 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-#ifndef ROBOTIS_MATH_MINIMUM_JERK_TRAJECTORY_H_
-#define ROBOTIS_MATH_MINIMUM_JERK_TRAJECTORY_H_
+#ifndef ROBOTIS_MATH_MINIMUM_JERK_TRAJECTORY_WITH_VIA_POINT_H_
+#define ROBOTIS_MATH_MINIMUM_JERK_TRAJECTORY_WITH_VIA_POINT_H_
 
 #define EIGEN_NO_DEBUG
 #define EIGEN_NO_STATIC_ASSERT
@@ -44,13 +44,14 @@
 namespace robotis_framework
 {
 
-class MinimumJerk
+class MinimumJerkViaPoint
 {
 public:
-  MinimumJerk(double ini_time, double fin_time,
-              std::vector<double_t> ini_pos, std::vector<double_t> ini_vel, std::vector<double_t> ini_acc,
-              std::vector<double_t> fin_pos, std::vector<double_t> fin_vel, std::vector<double_t> fin_acc);
-  virtual ~MinimumJerk();
+  MinimumJerkViaPoint(double ini_time, double fin_time, double via_time,
+                      std::vector<double_t> ini_pos, std::vector<double_t> ini_vel, std::vector<double_t> ini_acc,
+                      std::vector<double_t> fin_pos, std::vector<double_t> fin_vel, std::vector<double_t> fin_acc,
+                      std::vector<double_t> via_pos, std::vector<double_t> via_vel, std::vector<double_t> via_acc);
+  virtual ~MinimumJerkViaPoint();
 
   std::vector<double_t> getPosition(double time);
   std::vector<double_t> getVelocity(double time);
@@ -68,11 +69,12 @@ public:
 
 private:
   int number_of_joint_;
-  double ini_time_, fin_time_;
+  double ini_time_, fin_time_, via_time_;
   std::vector<double_t> ini_pos_, ini_vel_, ini_acc_;
   std::vector<double_t> fin_pos_, fin_vel_, fin_acc_;
+  std::vector<double_t> via_pos_, via_vel_, via_acc_;
 };
 
 }
 
-#endif /* ROBOTIS_MATH_MINIMUM_JERK_TRAJECTORY_H_ */
+#endif /* ROBOTIS_MATH_MINIMUM_JERK_TRAJECTORY_WITH_VIA_POINT_H_ */

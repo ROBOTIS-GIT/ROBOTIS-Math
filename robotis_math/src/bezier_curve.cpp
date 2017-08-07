@@ -40,10 +40,14 @@
 using namespace robotis_framework;
 
 BezierCurve::BezierCurve()
-{ }
+{
+
+}
 
 BezierCurve::~BezierCurve()
-{  }
+{
+
+}
 
 void BezierCurve::setBezierControlPoints(const std::vector<Point2D>& points)
 {
