@@ -32,14 +32,22 @@
 
 using namespace robotis_framework;
 
-MinimumJerkViaPoint::MinimumJerkViaPoint(double ini_time, double fin_time, double via_time,
+MinimumJerkViaPoint::MinimumJerkViaPoint(double ini_time, double fin_time, double via_time, double ratio,
                                          std::vector<double_t> ini_pos, std::vector<double_t> ini_vel, std::vector<double_t> ini_acc,
                                          std::vector<double_t> fin_pos, std::vector<double_t> fin_vel, std::vector<double_t> fin_acc,
                                          std::vector<double_t> via_pos, std::vector<double_t> via_vel, std::vector<double_t> via_acc)
 {
-  ini_time_ = ini_time;
-  fin_time_ = fin_time;
+  ratio_ = ratio;
+
+//  input_ini_time_ = ini_time;
+//  input_fin_time_ = fin_time;
   via_time_ = via_time;
+
+  double time_size = fin_time - ini_time;
+  double time_ratio = 0.5*ratio_*time_size;
+
+  ini_time_ = ini_time + time_ratio;
+  fin_time_ = fin_time - time_ratio;
 
   ini_pos_ = ini_pos;
   ini_vel_ = ini_vel;
