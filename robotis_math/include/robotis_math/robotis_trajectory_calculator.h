@@ -45,8 +45,7 @@
 #include "robotis_math_base.h"
 #include "fifth_order_polynomial_trajectory.h"
 #include "simple_trapezoidal_velocity_profile.h"
-#include "minimum_jerk_trajectory.h"
-#include "minimum_jerk_trajectory_with_via_point.h"
+
 
 namespace robotis_framework
 {

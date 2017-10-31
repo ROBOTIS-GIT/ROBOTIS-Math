@@ -40,5 +40,8 @@
 
 #include "robotis_trajectory_calculator.h"
 #include "bezier_curve.h"
+#include "preview_control.h"
+#include "minimum_jerk_trajectory.h"
+#include "minimum_jerk_trajectory_with_via_point.h"
 
 #endif /* ROBOTIS_MATH_ROBOTIS_MATH_H_ */

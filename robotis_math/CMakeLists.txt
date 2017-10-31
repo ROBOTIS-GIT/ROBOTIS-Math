@@ -50,6 +50,7 @@ add_library(robotis_math
    src/robotis_linear_algebra.cpp
    src/bezier_curve.cpp
    src/step_data_define.cpp
+   src/preview_control.cpp
 )
 
 add_dependencies(robotis_math ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
