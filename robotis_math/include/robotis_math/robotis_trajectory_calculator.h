@@ -46,6 +46,7 @@
 #include "fifth_order_polynomial_trajectory.h"
 #include "simple_trapezoidal_velocity_profile.h"
 
+
 namespace robotis_framework
 {
 // minimum jerk trajectory

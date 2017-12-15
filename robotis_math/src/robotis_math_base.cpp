@@ -28,13 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-/*
- * robotis_math_base.cpp
- *
- *  Created on: June 7, 2016
- *      Author: sch
- */
-
 #include "robotis_math/robotis_math_base.h"
 
 namespace robotis_framework
