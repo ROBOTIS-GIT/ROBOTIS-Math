@@ -96,10 +96,10 @@ MinimumJerk::MinimumJerk(double ini_time, double fin_time,
 
       acceleration_coeff_.coeffRef(0,i) = 0.0;
       acceleration_coeff_.coeffRef(1,i) = 0.0;
-      acceleration_coeff_.coeffRef(2,i) = 20.0*position_coeff_.coeff(0,0);
-      acceleration_coeff_.coeffRef(3,i) = 12.0*position_coeff_.coeff(1,0);
-      acceleration_coeff_.coeffRef(4,i) = 6.0*position_coeff_.coeff(2,0);
-      acceleration_coeff_.coeffRef(5,i) = 2.0*position_coeff_.coeff(3,0);
+      acceleration_coeff_.coeffRef(2,i) = 20.0*position_coeff.coeff(0,0);
+      acceleration_coeff_.coeffRef(3,i) = 12.0*position_coeff.coeff(1,0);
+      acceleration_coeff_.coeffRef(4,i) = 6.0*position_coeff.coeff(2,0);
+      acceleration_coeff_.coeffRef(5,i) = 2.0*position_coeff.coeff(3,0);
     }
   }
 
