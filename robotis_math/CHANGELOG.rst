@@ -2,13 +2,18 @@
 Changelog for package robotis_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.4 (2018-03-21)
+0.2.5 (2018-03-21)
 ------------------
 * added preview_control
 * added minimum jerk with viapoint
 * changed package.xml format to v2
 * changed LICENSE to Apache 2.0
 * Contributors: Kayman, SCH, Pyo
+
+0.2.4 (2018-03-21)
+------------------
+* refactoring to release
+* Contributors: Pyo
 
 0.2.3 (2017-04-24)
 ------------------
