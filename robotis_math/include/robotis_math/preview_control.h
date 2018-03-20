@@ -28,20 +28,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-/*
- * robotis_math.h
- *
- *  Created on: June 7, 2016
- *      Author: sch
- */
+#ifndef ROBOTIS_MATH_PREVIEW_CONTROL_H_
+#define ROBOTIS_MATH_PREVIEW_CONTROL_H_
 
-#ifndef ROBOTIS_MATH_ROBOTIS_MATH_H_
-#define ROBOTIS_MATH_ROBOTIS_MATH_H_
+#define EIGEN_NO_DEBUG
+#define EIGEN_NO_STATIC_ASSERT
 
-#include "robotis_trajectory_calculator.h"
-#include "bezier_curve.h"
-#include "preview_control.h"
-#include "minimum_jerk_trajectory.h"
-#include "minimum_jerk_trajectory_with_via_point.h"
+#include "robotis_linear_algebra.h"
+#include "robotis_math_base.h"
 
-#endif /* ROBOTIS_MATH_ROBOTIS_MATH_H_ */
+#include <ros/ros.h>
+#include <stdint.h>
+#include <vector>
+
+namespace robotis_framework
+{
+
+class PreviewControl
+{
+public:
+  PreviewControl();
+  virtual ~PreviewControl();
+
+  Eigen::MatrixXd calcPreviewParam(double preview_time, double control_cycle,
+                                   double lipm_height,
+                                   Eigen::MatrixXd K, Eigen::MatrixXd P);
+
+private:
+
+};
+
+}
+
+#endif /* ROBOTIS_MATH_MINIMUM_JERK_TRAJECTORY_H_ */

@@ -43,11 +43,14 @@ include_directories(
 add_library(robotis_math
    src/robotis_math_base.cpp
    src/robotis_trajectory_calculator.cpp
+   src/minimum_jerk_trajectory.cpp
+   src/minimum_jerk_trajectory_with_via_point.cpp
    src/fifth_order_polynomial_trajectory.cpp
    src/simple_trapezoidal_velocity_profile.cpp
    src/robotis_linear_algebra.cpp
    src/bezier_curve.cpp
    src/step_data_define.cpp
+   src/preview_control.cpp
 )
 
 add_dependencies(robotis_math ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
