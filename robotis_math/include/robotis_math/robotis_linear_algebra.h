@@ -29,7 +29,7 @@
 
 #include <cmath>
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include "step_data_define.h"
 
 namespace robotis_framework
