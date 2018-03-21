@@ -2,6 +2,11 @@
 Changelog for package robotis_math
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.6 (2018-03-21)
+------------------
+* modified the eigen path to avoid path error on Debian OS
+* Contributors: Pyo
+
 0.2.5 (2018-03-21)
 ------------------
 * added preview_control
