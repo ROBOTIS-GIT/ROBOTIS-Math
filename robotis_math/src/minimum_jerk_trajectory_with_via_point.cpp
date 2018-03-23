@@ -112,11 +112,11 @@ MinimumJerkViaPoint::MinimumJerkViaPoint(double ini_time, double fin_time, doubl
 
       acceleration_coeff_.coeffRef(0,i) = 0.0;
       acceleration_coeff_.coeffRef(1,i) = 0.0;
-      acceleration_coeff_.coeffRef(2,i) = 20.0*position_coeff_.coeff(0,0);
-      acceleration_coeff_.coeffRef(3,i) = 12.0*position_coeff_.coeff(1,0);
-      acceleration_coeff_.coeffRef(4,i) = 6.0*position_coeff_.coeff(2,0);
-      acceleration_coeff_.coeffRef(5,i) = 2.0*position_coeff_.coeff(3,0);
-      acceleration_coeff_.coeffRef(5,i) = position_coeff_.coeff(6,0);
+      acceleration_coeff_.coeffRef(2,i) = 20.0*position_coeff.coeff(0,0);
+      acceleration_coeff_.coeffRef(3,i) = 12.0*position_coeff.coeff(1,0);
+      acceleration_coeff_.coeffRef(4,i) = 6.0*position_coeff.coeff(2,0);
+      acceleration_coeff_.coeffRef(5,i) = 2.0*position_coeff.coeff(3,0);
+      acceleration_coeff_.coeffRef(5,i) = position_coeff.coeff(6,0);
     }
   }
 
@@ -134,9 +134,9 @@ MinimumJerkViaPoint::~MinimumJerkViaPoint()
 std::vector<double_t> MinimumJerkViaPoint::getPosition(double time)
 {
   if(time >= fin_time_)
-    cur_pos_  = fin_pos_;
+    cur_pos_ = fin_pos_;
   else if(time <= ini_time_)
-    cur_pos_  = ini_pos_;
+    cur_pos_ = ini_pos_;
   else if (time > ini_time_ && time <= via_time_)
   {
     cur_time_ = time;
@@ -165,9 +165,9 @@ std::vector<double_t> MinimumJerkViaPoint::getPosition(double time)
 std::vector<double_t> MinimumJerkViaPoint::getVelocity(double time)
 {
   if(time >= fin_time_)
-    cur_vel_  = fin_vel_;
+    cur_vel_ = fin_vel_;
   else if(time <= ini_time_)
-    cur_vel_  = ini_vel_;
+    cur_vel_ = ini_vel_;
   else if (time > ini_time_ && time <= via_time_)
   {
     cur_time_ = time;
