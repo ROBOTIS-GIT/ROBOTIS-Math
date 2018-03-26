@@ -1,18 +1,32 @@
 /*******************************************************************************
-* Copyright 2018 ROBOTIS CO., LTD.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*******************************************************************************/
+ * Copyright (c) 2016, ROBOTIS CO., LTD.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * * Neither the name of ROBOTIS nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
 
 #include "robotis_math/minimum_jerk_trajectory_with_via_point.h"
 
@@ -63,13 +77,13 @@ MinimumJerkViaPoint::MinimumJerkViaPoint(double ini_time, double fin_time, doubl
     Eigen::MatrixXd conditions_mat;
 
     time_mat.resize(7,7);
-    time_mat <<      powDI(ini_time_,5),      powDI(ini_time_,4),     powDI(ini_time_,3), powDI(ini_time_,2), ini_time_, 1.0, 0.0,
-                 5.0*powDI(ini_time_,4),  4.0*powDI(ini_time_,3), 3.0*powDI(ini_time_,2),      2.0*ini_time_,       1.0, 0.0, 0.0,
-                20.0*powDI(ini_time_,3), 12.0*powDI(ini_time_,2),          6.0*ini_time_,                2.0,       0.0, 0.0, 0.0,
+    time_mat <<      powDI(ini_time_,5),      powDI(ini_time_,4),     powDI(ini_time_,3), powDI(ini_time_,2), ini_time_, 1.0,                                  0.0,
+                 5.0*powDI(ini_time_,4),  4.0*powDI(ini_time_,3), 3.0*powDI(ini_time_,2),      2.0*ini_time_,       1.0, 0.0,                                  0.0,
+                20.0*powDI(ini_time_,3), 12.0*powDI(ini_time_,2),          6.0*ini_time_,                2.0,       0.0, 0.0,                                  0.0,
                      powDI(fin_time_,5),      powDI(fin_time_,4),     powDI(fin_time_,3), powDI(fin_time_,2), fin_time_, 1.0, powDI(fin_time_ - via_time_,5)/120.0,
-                 5.0*powDI(fin_time_,4),  4.0*powDI(fin_time_,3), 3.0*powDI(fin_time_,2),      2.0*fin_time_,       1.0, 0.0, powDI(fin_time_ - via_time_,4)/24.0,
-                20.0*powDI(fin_time_,3), 12.0*powDI(fin_time_,2),          6.0*fin_time_,                2.0,       0.0, 0.0, powDI(fin_time_ - via_time_,3)/6.0,
-                     powDI(via_time_,5),      powDI(via_time_,4),     powDI(via_time_,3), powDI(via_time_,2), via_time_, 1.0, 0.0;
+                 5.0*powDI(fin_time_,4),  4.0*powDI(fin_time_,3), 3.0*powDI(fin_time_,2),      2.0*fin_time_,       1.0, 0.0,  powDI(fin_time_ - via_time_,4)/24.0,
+                20.0*powDI(fin_time_,3), 12.0*powDI(fin_time_,2),          6.0*fin_time_,                2.0,       0.0, 0.0,   powDI(fin_time_ - via_time_,3)/6.0,
+                     powDI(via_time_,5),      powDI(via_time_,4),     powDI(via_time_,3), powDI(via_time_,2), via_time_, 1.0,                                  0.0;
 
     conditions_mat.resize(7,1);
     conditions_mat.fill(0.0);
@@ -102,7 +116,7 @@ MinimumJerkViaPoint::MinimumJerkViaPoint(double ini_time, double fin_time, doubl
       acceleration_coeff_.coeffRef(3,i) = 12.0*position_coeff.coeff(1,0);
       acceleration_coeff_.coeffRef(4,i) = 6.0*position_coeff.coeff(2,0);
       acceleration_coeff_.coeffRef(5,i) = 2.0*position_coeff.coeff(3,0);
-      acceleration_coeff_.coeffRef(5,i) = position_coeff.coeff(6,0);
+      acceleration_coeff_.coeffRef(6,i) = position_coeff.coeff(6,0);
     }
   }
 
@@ -168,7 +182,7 @@ std::vector<double_t> MinimumJerkViaPoint::getVelocity(double time)
   else if (time < fin_time_ && time > via_time_)
   {
     cur_time_ = time;
-    time_variables_ << powDI(time, 5), powDI(time, 4), powDI(time, 3), powDI(time, 2), time, 1.0, powDI(time - via_time_,5)/120.0;
+    time_variables_ << powDI(time, 5), powDI(time, 4), powDI(time, 3), powDI(time, 2), time, 1.0, powDI(time - via_time_,4)/24.0;
 
     for (int i = 0; i < number_of_joint_; i++)
     {
@@ -199,7 +213,7 @@ std::vector<double_t> MinimumJerkViaPoint::getAcceleration(double time)
   else if (time < fin_time_ && time > via_time_)
   {
     cur_time_ = time;
-    time_variables_ << powDI(time, 5), powDI(time, 4), powDI(time, 3), powDI(time, 2), time, 1.0, powDI(time - via_time_,5)/120.0;
+    time_variables_ << powDI(time, 5), powDI(time, 4), powDI(time, 3), powDI(time, 2), time, 1.0, powDI(time - via_time_,3)/6.0;
 
     for (int i = 0; i < number_of_joint_; i++)
     {
