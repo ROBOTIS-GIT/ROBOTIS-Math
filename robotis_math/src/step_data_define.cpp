@@ -68,6 +68,7 @@ std::ostream& operator<<(std::ostream& out, const StepTimeData& time_data)
       << time_data.start_time_delay_ratio_roll << "/" << time_data.start_time_delay_ratio_pitch << "/" << time_data.start_time_delay_ratio_yaw << "\n";
   out << "[FINISH] " << time_data.finish_time_advance_ratio_x << "/" << time_data.finish_time_advance_ratio_y << "/" << time_data.finish_time_advance_ratio_z << "|"
       << time_data.finish_time_advance_ratio_roll << "/" << time_data.finish_time_advance_ratio_pitch << "/" << time_data.finish_time_advance_ratio_yaw;
+  return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const StepData& step_data)
