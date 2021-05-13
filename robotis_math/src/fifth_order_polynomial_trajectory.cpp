@@ -75,7 +75,7 @@ FifthOrderPolynomialTrajectory::FifthOrderPolynomialTrajectory(double initial_ti
     time_mat.resize(6,6);
     time_mat <<  powDI(initial_time_, 5),     powDI(initial_time_, 4),      powDI(initial_time_, 3), powDI(initial_time_, 2), initial_time_, 1.0,
              5.0*powDI(initial_time_, 4),  4.0*powDI(initial_time_, 3), 3.0*powDI(initial_time_, 2),    2.0*initial_time_,              1.0, 0.0,
-            20.0*powDI(initial_time_, 3), 12.0*powDI(initial_time_, 2), 6.0*initial_time_,              2.0,                            0.0, 0.0;
+            20.0*powDI(initial_time_, 3), 12.0*powDI(initial_time_, 2), 6.0*initial_time_,              2.0,                            0.0, 0.0,
                  powDI(final_time_, 5),      powDI(final_time_, 4),     powDI(final_time_, 3), powDI(final_time_, 2), final_time_, 1.0,
              5.0*powDI(final_time_, 4),  4.0*powDI(final_time_, 3), 3.0*powDI(final_time_, 2),    2.0*final_time_,            1.0, 0.0,
             20.0*powDI(final_time_, 3), 12.0*powDI(final_time_, 2), 6.0*final_time_,              2.0,                        0.0, 0.0;
