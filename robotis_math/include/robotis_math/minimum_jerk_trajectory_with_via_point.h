@@ -23,7 +23,7 @@
 #include "robotis_linear_algebra.h"
 #include "robotis_math_base.h"
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <stdint.h>
 #include <vector>
 
