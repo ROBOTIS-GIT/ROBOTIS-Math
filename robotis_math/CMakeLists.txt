@@ -11,6 +11,8 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
 )
 
+add_compile_options(-fPIC)
+
 add_library(${PROJECT_NAME}
    src/robotis_math_base.cpp
    src/robotis_trajectory_calculator.cpp
